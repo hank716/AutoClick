@@ -1,185 +1,172 @@
-# PrayForTrump
+# 🎮 AutoClick – 現代化遊戲自動按鍵序列工具
 
-A lightweight desktop auto key sequence runner with randomized timing, built with Python and Tkinter.
+AutoClick 是一款以 **Python + Tkinter** 開發的桌面自動按鍵工具，主打 **現代化 UI（Material Design 風格）**、**高精度隨機延遲**、**安全的多執行緒控制**，適合用於需要重複按鍵操作的遊戲或應用場景。
 
-> **PrayForTrump** is a personal-use automation tool that allows you to record keyboard sequences and replay them in a loop with configurable randomness, simulating more human-like input behavior.
-
----
-
-## Features
-
-- Record custom keyboard sequences in real time
-- Replay key sequences in a loop
-- Independent randomization for:
-  - Delay between individual key presses
-  - Rest time between each full loop
-- Live preview of randomized timing ranges
-- Simple GUI (Tkinter-based)
-- Always-on-top window option
-- Start / Stop execution at any time
+> ⚠️ 本工具僅供 **學習與個人使用**，請勿用於違反遊戲或服務條款的用途。
 
 ---
 
-## Screenshot
+## ✨ 功能特色
 
-*(Optional – you can add a screenshot here later)*
+* 📝 **按鍵序列錄製**
 
-```text
-[ GUI Screenshot ]
-````
+  * 即時監聽鍵盤輸入
+  * 支援任意鍵序列（依錄製順序執行）
+
+* ⏱️ **人性化隨機延遲**
+
+  * 按鍵間隔可設定「基準時間 ± 百分比隨機」
+  * 每一輪結束後可設定整輪休息時間（同樣支援隨機）
+
+* 🎯 **穩定執行控制**
+
+  * 倒數 3 秒後開始
+  * 執行中鎖定設定，避免誤操作
+  * 支援高精度 sleep（避免時間累積誤差）
+
+* 🛑 **安全機制**
+
+  * 緊急停止快捷鍵：`Ctrl + Shift + Q`
+  * 滑鼠移動到螢幕角落（PyDirectInput failsafe）
+
+* 📊 **即時統計資訊**
+
+  * 執行循環次數
+  * 總運行時間
+  * 整輪倒數時間
+  * 總按鍵數
+
+* 🎨 **現代化 UI**
+
+  * Material Card 設計
+  * Hover 動畫按鈕
+  * 清楚的狀態與提示顯示
 
 ---
 
-## Requirements
+## 🖥️ 系統需求
 
-* Python **3.9 – 3.11**
-* Windows OS (recommended)
+* 作業系統：
 
-### Python Dependencies
+  * ✅ Windows 10 / 11（**必要**）
+  * ❌ macOS / Linux（不支援，因使用 `pydirectinput` 與 Windows 輸入法 API）
 
-```txt
-keyboard>=0.13.5
-pydirectinput>=1.0.4
-```
+* Python 版本：
 
-> `tkinter`, `threading`, `time`, and `random` are part of the Python standard library.
+  * **Python 3.9+（建議 3.10 或 3.11）**
 
 ---
 
-## Installation
+## 📦 安裝方式
 
-### Option 1: Using `venv` (Recommended)
+### 1️⃣ 建立虛擬環境（建議）
 
 ```bash
 python -m venv venv
-```
-
-Activate the virtual environment:
-
-* **Windows (PowerShell)**
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-* **Windows (cmd)**
-
-```cmd
 venv\Scripts\activate
 ```
 
-* **Linux / macOS**
-
-```bash
-source venv/bin/activate
-```
-
-Install dependencies:
+### 2️⃣ 安裝套件
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+`requirements.txt` 內容：
 
-### Option 2: Using Conda
-
-```bash
-conda create -n prayfortrump python=3.10 -y
-conda activate prayfortrump
-pip install -r requirements.txt
+```txt
+tk
+keyboard
+pydirectinput
 ```
 
+> ⚠️ `keyboard` 套件需要 **系統管理員權限** 才能正常監聽全域鍵盤。
+
 ---
 
-## Usage
-
-Run the application:
+## ▶️ 執行方式
 
 ```bash
 python PrayForTrump.py
 ```
 
-### Basic Workflow
-
-1. Click **開始錄製** to start recording key presses
-2. Press the keys you want to automate
-3. Click **開始錄製** again to stop recording
-4. Adjust:
-
-   * Base key delay
-   * Key delay randomization
-   * Loop rest time
-   * Loop randomization
-5. Click **啟動循環**
-6. Click **停止** to stop execution
+> 建議 **以系統管理員身分** 執行，避免鍵盤監聽初始化失敗。
 
 ---
 
-## Randomization Logic
+## 🧭 使用流程
 
-* **Key delay**
+### Step 1：錄製按鍵
 
-  * Randomized independently for each key press
-* **Loop delay**
-
-  * Randomized independently after each full sequence
-* Random ranges are displayed in real time for transparency
-
-This design reduces detection risk in systems that monitor fixed-interval automation.
+1. 點擊 **「🔴 開始錄製」**
+2. 依序按下你要自動執行的按鍵
+3. 再次點擊按鈕結束錄製
 
 ---
 
-## Important Notes
+### Step 2：設定時間
 
-### Keyboard Permission
+* **按鍵間隔（秒）**
 
-* **Windows**
+  * 基準：`0.2`
+  * 隨機範圍：`±100%`
 
-  * Must be run as **Administrator**
-* **Linux**
+* **整輪休息（秒）**
 
-  * Requires root privileges or udev configuration
-* **Wayland**
+  * 基準：`5.0`
+  * 隨機範圍：`±10%`
 
-  * Not supported (use X11 instead)
-
-### Platform Compatibility
-
-* Fully supported on **Windows**
-* Limited or unreliable behavior on **Linux / macOS**
-* `pydirectinput` is Windows-focused
+📋 下方會即時顯示「實際可能的時間範圍預覽」。
 
 ---
 
-## Safety & Disclaimer
+### Step 3：開始執行
 
-This project is intended for **personal learning and private automation use only**.
+* 點擊 **「▶️ 開始執行」**
+* 3 秒倒數後開始自動按鍵
+* 執行中可隨時：
 
-* Do not use in online games, competitive platforms, or services that prohibit automation
-* The author is not responsible for any account bans or violations caused by misuse
-
----
-
-## Project Structure
-
-```text
-PrayForTrump/
-├── PrayForTrump.py
-├── requirements.txt
-├── README.md
-└── venv/        # or conda environment
-```
+  * 點擊 **「⏹️ 停止」**
+  * 或按下 **Ctrl + Shift + Q（緊急停止）**
 
 ---
 
-## Author
+## ⌨️ 快捷鍵
 
-**Hank**
+| 功能   | 快捷鍵                |
+| ---- | ------------------ |
+| 緊急停止 | `Ctrl + Shift + Q` |
 
 ---
 
-## License
+## 🛡️ 安全與設計說明
 
-This project is provided as-is for educational purposes.
-No warranty is implied or provided.
+* 所有執行狀態皆由 `threading.Lock` 保護
+* UI 更新統一透過 `root.after()` 回到主執行緒
+* 採用 `time.perf_counter()` 進行高精度時間控制
+* 關閉視窗時會安全釋放鍵盤監聽與背景執行緒
+
+---
+
+## ⚠️ 注意事項
+
+* 本工具會 **直接模擬鍵盤輸入**，請務必確認焦點視窗正確
+* 不建議在背景執行時進行其他輸入操作
+* 請勿用於任何違反遊戲公平性或服務條款的行為
+
+---
+
+## 📄 授權聲明
+
+本專案僅供 **學習、研究與個人使用**。
+
+作者不對任何使用後果負責。
+
+---
+
+## 👤 作者
+
+* **Hank**
+* UI / Architecture / Stability Focused
+
+> Pray For Trump 阿杰 ✝️
