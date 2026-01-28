@@ -31,31 +31,18 @@ jobs:
             --onefile ^
             --noconsole ^
             --icon trump.ico ^
-            --name PrayForTrump ^
+            --name AutoClick ^
             PrayForTrump.py
-
-      - name: Prepare artifact
-        run: |
-          mkdir artifacts
-          copy dist\PrayForTrump.exe artifacts\PrayForTrump.exe
-
-      - name: Upload EXE artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows
-          path: artifacts/PrayForTrump.exe
 
   release:
     needs: build-windows
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+      - uses: actions/checkout@v4
 
-      - name: Create GitHub Release
+      - name: Upload EXE to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name == 'main' && 'manual-build' || github.ref }}
           name: "Release ${{ github.ref_name }}"
-          files: artifacts/PrayForTrump.exe
+          files: build-windows/dist/PrayForTrump.exe
