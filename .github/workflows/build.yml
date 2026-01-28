@@ -1,4 +1,4 @@
-name: Build & Release (Windows EXE + macOS DMG)
+name: Build & Release (Windows EXE)
 
 on:
   push:
@@ -25,7 +25,6 @@ jobs:
           pip install -r requirements.txt pyinstaller
 
       - name: Build EXE
-        # 這裡加上 shell: cmd 讓原本的 ^ 符號可以運作
         shell: cmd
         run: |
           pyinstaller ^
@@ -35,69 +34,19 @@ jobs:
             --name PrayForTrump ^
             PrayForTrump.py
 
-      - name: Upload EXE
+      - name: Prepare artifact
+        run: |
+          mkdir artifacts
+          copy dist\PrayForTrump.exe artifacts\PrayForTrump.exe
+
+      - name: Upload EXE artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows
-          path: dist/PrayForTrump.exe
-
-  build-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install dependencies
-        run: |
-          pip3 install --upgrade pip
-          pip3 install -r requirements.txt pillow pyinstaller
-          # 改用 brew 安裝系統工具
-          brew install create-dmg
-
-      - name: Create icns
-        run: |
-          mkdir icon.iconset
-          sips -z 16 16    trump.png --out icon.iconset/icon_16x16.png
-          sips -z 32 32    trump.png --out icon.iconset/icon_16x16@2x.png
-          sips -z 32 32    trump.png --out icon.iconset/icon_32x32.png
-          sips -z 64 64    trump.png --out icon.iconset/icon_32x32@2x.png
-          sips -z 128 128  trump.png --out icon.iconset/icon_128x128.png
-          sips -z 256 256  trump.png --out icon.iconset/icon_128x128@2x.png
-          sips -z 256 256  trump.png --out icon.iconset/icon_256x256.png
-          sips -z 512 512  trump.png --out icon.iconset/icon_256x256@2x.png
-          sips -z 512 512  trump.png --out icon.iconset/icon_512x512.png
-          cp trump.png icon.iconset/icon_512x512@2x.png
-          iconutil -c icns icon.iconset -o app.icns
-
-      - name: Build macOS App
-        run: |
-          pyinstaller \
-            --windowed \
-            --icon app.icns \
-            --name PrayForTrump \
-            PrayForTrump.py
-
-      - name: Create DMG
-        run: |
-          create-dmg \
-            --volname "PrayForTrump" \
-            --window-size 600 400 \
-            --icon-size 120 \
-            --app-drop-link 400 200 \
-            PrayForTrump.dmg \
-            dist/PrayForTrump.app
-
-      - name: Upload DMG
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos
-          path: PrayForTrump.dmg
+          path: artifacts/PrayForTrump.exe
 
   release:
-    needs: [build-windows, build-macos]
+    needs: build-windows
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -109,6 +58,4 @@ jobs:
         with:
           tag_name: ${{ github.ref_name == 'main' && 'manual-build' || github.ref }}
           name: "Release ${{ github.ref_name }}"
-          files: |
-            artifacts/windows/PrayForTrump.exe
-            artifacts/macos/PrayForTrump.dmg
+          files: artifacts/PrayForTrump.exe
