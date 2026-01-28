@@ -41,6 +41,8 @@ AutoClick 是一款以 **Python + Tkinter** 開發的桌面自動按鍵工具，
   * Material Card 設計
   * Hover 動畫按鈕
   * 清楚的狀態與提示顯示
+  * <img width="502" height="932" alt="image" src="https://github.com/user-attachments/assets/394a1e70-7e8d-4edc-b7ab-80244665c919" />
+
 
 ---
 
