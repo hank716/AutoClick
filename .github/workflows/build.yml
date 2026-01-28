@@ -10,12 +10,14 @@ permissions:
   contents: write
 
 jobs:
-  build-windows:
+  build-and-release:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
@@ -34,15 +36,13 @@ jobs:
             --name AutoClick ^
             PrayForTrump.py
 
-  release:
-    needs: build-windows
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
       - name: Upload EXE to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name == 'main' && 'manual-build' || github.ref }}
+          # 如果是手動執行則使用 manual-build，如果是 push tag 則使用該 tag 名稱
+          tag_name: ${{ github.ref_name == 'main' && 'manual-build' || github.ref_name }}
           name: "Release ${{ github.ref_name }}"
-          files: build-windows/dist/PrayForTrump.exe
+          # 這裡必須指向 PyInstaller 實際產出的路徑與檔名
+          files: dist/AutoClick.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
